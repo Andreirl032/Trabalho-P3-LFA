@@ -2,71 +2,137 @@
 import java.util.Scanner;
 
 public class AFD {
+    //Atributos
+    int[] estados;
+    int estadoInicial;
+    String[] programa;
+    int[] estadosFinais;
+    char []alfabeto;
+
+    //Atributos da execução do autômato
     int contador;
     char[] palavra;
 
-    public static void main(String[] args) {
-        AFD automato = new AFD();
-        String sentenca;
+    //Construtores
+    public AFD() {
 
-        Scanner entrada = new Scanner(System.in);
-        System.out.println("Entre com a sentença: ");
-        sentenca = entrada.nextLine();
-        automato.palavra=sentenca.toCharArray();
-        automato.iniciar();
+    }
+    public AFD(int[] estados, int estadoInicial, String[] programa, int[] estadosFinais) {
+        this.estados = estados;
+        this.estadoInicial = estadoInicial;
+        this.programa = programa;
+        this.estadosFinais = estadosFinais;
+        MergeSort.mergeSort(this.estados,0,this.estados.length);
+        MergeSort.mergeSort(this.programa,0,this.programa.length);
+        MergeSort.mergeSort(this.estadosFinais,0,this.estadosFinais.length);
+        this.alfabeto=gerarAlfabetoAPartirDeFuncaoPrograma(programa);
     }
 
-    public void iniciar(){
-        this.contador=0;
-        q0();
-    }
-    public void q0(){
-        if(contador<palavra.length){
-            if(palavra[contador]=='a'){
-                contador++;
-                q1();
-            }
-            else if(palavra[contador]=='c'){
-                contador++;
-                qf();
-            }
-            else{
-                qErro();
-            }
-        } else{
-            qErro();
+    //Funções para geração de vetor contendo o alfabeto do autômato
+    public int buscaBinariaRecursiva(
+            char[] sortedArray, int key, int low, int high) {
+        int middle = low  + ((high - low) / 2);
+
+        if (high < low) {
+            return -1;
+        }
+
+        if (key == sortedArray[middle]) {
+            return middle;
+        } else if (key < sortedArray[middle]) {
+            return buscaBinariaRecursiva(
+                    sortedArray, key, low, middle - 1);
+        } else {
+            return buscaBinariaRecursiva(
+                    sortedArray, key, middle + 1, high);
         }
     }
-    public void q1(){
-        if(contador<palavra.length){
-            if(palavra[contador]=='b'){
-                contador++;
-                q2();
+
+    public int acharIndexLetraNaFuncaoPrograma(String programa){
+        int index = -1;
+        for(int i=0;i<programa.length();i++){
+            if(programa.charAt(i)>='a' && programa.charAt(i)<='z'){
+                index=i;
+                break;
             }
-            else{
-                qErro();
-            }
-        } else{
-            qErro();
         }
+        return index;
     }
-    public void q2(){
-        if(contador<palavra.length){
-            if(palavra[contador]=='b'){
-                contador++;
-                q0();
+
+    public char[] gerarAlfabetoAPartirDeFuncaoPrograma(String[] programa){
+        char[] alfabeto = new char[programa.length];
+        int count=0;
+        for(String s:programa){
+            if(buscaBinariaRecursiva(alfabeto,s.charAt(acharIndexLetraNaFuncaoPrograma(s)),0,alfabeto.length)==-1){
+                alfabeto[count++]=s.charAt(acharIndexLetraNaFuncaoPrograma(s));
             }
-            else{
-                qErro();
-            }
-        } else{
-            qErro();
         }
+        MergeSort.mergeSort(alfabeto,0,alfabeto.length);
+        return alfabeto;
     }
-    public void qf(){
-        System.err.println("PALAVRA ACEITA PELO AUTOMATO!");
+
+    public int acharEstadoOrigem(String programa){
+        return Integer.parseInt(programa.substring(0, acharIndexLetraNaFuncaoPrograma(programa) - 1));
     }
-    public void qErro(){
-        System.err.println("PALAVRA REJEITADA PELO AUTOMATO!");
+
+    public int acharEstadoAlvo(String programa){
+        return Integer.parseInt(programa.substring(acharIndexLetraNaFuncaoPrograma(programa) + 1),programa.length());
+    }
+
+    //Getters e setters
+    public int[] getEstados() {
+        return estados;
+    }
+
+    public void setEstados(int[] estados) {
+        this.estados = estados;
+    }
+
+    public int getEstadoInicial() {
+        return estadoInicial;
+    }
+
+    public void setEstadoInicial(int estadoInicial) {
+        this.estadoInicial = estadoInicial;
+    }
+
+    public String[] getPrograma() {
+        return programa;
+    }
+
+    public void setPrograma(String[] programa) {
+        this.programa = programa;
+    }
+
+    public int[] getEstadosFinais() {
+        return estadosFinais;
+    }
+
+    public void setEstadosFinais(int[] estadosFinais) {
+        this.estadosFinais = estadosFinais;
+    }
+
+    public int getContador() {
+        return contador;
+    }
+
+    public void setContador(int contador) {
+        this.contador = contador;
+    }
+
+    public char[] getPalavra() {
+        return palavra;
+    }
+
+    public void setPalavra(char[] palavra) {
+        this.palavra = palavra;
+    }
+
+    public char[] getAlfabeto() {
+        return alfabeto;
+    }
+
+    public void setAlfabeto(char[] alfabeto) {
+        this.alfabeto = alfabeto;
     }
 }
